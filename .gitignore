@@ -1,0 +1,23 @@
+# Environment
+venv/
+.env
+
+# Cache and build
+__pycache__/
+*.egg-info/
+dist/
+build/
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
+
+# Test Outputs
+sampleoutputs/
+
+# Temporaries (if any outside sampleoutputs)
+test.jpg
+temp_*.png
+*.log
+
