@@ -1,7 +1,7 @@
 import logging
+import hashlib
 from concurrent.futures import ProcessPoolExecutor
 from typing import List
-from .core import Scrubber
 
 # Set up logging for parallel workers
 logger = logging.getLogger(__name__)
@@ -12,6 +12,7 @@ def _scrub_task(image_data: bytes) -> bytes:
     Returns cleaned bytes or original bytes on failure.
     """
     try:
+        from .core import Scrubber
         # Scrubber handles memory-only processing
         scrubber = Scrubber(image_data)
         clean_bytes, _ = scrubber.process()
@@ -36,3 +37,11 @@ def bulk_process(image_list: List[bytes], max_workers: int = None) -> List[bytes
         # executor.map preserves order
         results = list(executor.map(_scrub_task, image_list))
     return results
+
+def get_file_hash(image_bytes: bytes) -> str:
+    """
+    Returns the SHA-256 hash of the provided bytes.
+    Used to verify the 'Stealth Mode' has successfully changed the 
+    file's digital identity.
+    """
+    return hashlib.sha256(image_bytes).hexdigest()

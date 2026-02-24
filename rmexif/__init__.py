@@ -3,7 +3,7 @@ class ProcessingError(Exception):
     pass
 
 from .core import Scrubber
-from .utils import bulk_process
+from .utils import bulk_process, get_file_hash
 
-__all__ = ["Scrubber", "ProcessingError", "bulk_process"]
+__all__ = ["Scrubber", "ProcessingError", "bulk_process", "get_file_hash"]
 

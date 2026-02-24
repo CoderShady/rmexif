@@ -16,9 +16,19 @@ def strip_metadata(image_bytes: bytes) -> bytes:
     try:
         # PIL.Image.open and save are thread-safe for separate ByteIO streams
         img = Image.open(io.BytesIO(image_bytes))
+        original_format = img.format if img.format else "JPEG"
+        
+        # Apply slight resize factor (0.99) to ensure unique hash
+        width, height = img.size
+        new_size = (max(1, int(width * 0.99)), max(1, int(height * 0.99)))
+        img = img.resize(new_size, Image.Resampling.LANCZOS)
+        
         output = io.BytesIO()
-        img_format = img.format if img.format else "JPEG"
-        img.save(output, format=img_format)
+        save_kwargs = {"format": original_format}
+        if original_format.upper() in ["JPEG", "JPG", "WEBP"]:
+            save_kwargs["quality"] = 95
+            
+        img.save(output, **save_kwargs)
         return output.getvalue()
     except Exception as e:
         logger.error(f"Failed to strip metadata: {e}", exc_info=True)
@@ -84,7 +94,7 @@ def blur_faces(image_bytes: bytes) -> Tuple[bytes, int]:
             blurred_face = cv2.GaussianBlur(face_roi, (ksize, ksize), 30)
             img[y:y+h, x:x+w] = blurred_face
             
-        _, buffer = cv2.imencode('.jpg', img)
+        _, buffer = cv2.imencode('.jpg', img, [int(cv2.IMWRITE_JPEG_QUALITY), 95])
         return buffer.tobytes(), len(faces)
     except Exception as e:
         logger.error(f"Failed to blur faces: {e}", exc_info=True)

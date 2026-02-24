@@ -42,8 +42,13 @@ def test_api():
         with open(output_path, 'wb') as f:
             f.write(scrubbed_bytes)
             
-        # 5. Print only the JSON dictionary of stats to show the 'API' response
+        # 5. Print the API response and identity verification
+        print(f"--- File: {filenames[i]} ---")
+        print(f"Original Hash: {stats['original_hash']}")
+        print(f"Scrubbed Hash: {stats['new_hash']}")
+        print(f"Identity Changed: {stats['original_hash'] != stats['new_hash']}")
         print(json.dumps(stats, indent=2))
+        print("\n")
 
 if __name__ == "__main__":
     test_api()

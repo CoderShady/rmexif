@@ -16,6 +16,6 @@ setup(
         ],
     },
     author="CoderShady",
-    description="A professional tool to strip EXIF metadata and blur faces from images.",
+    description="A professional tool to strip EXIF metadata, blur faces, and reset digital identity via Stealth Mode.",
     python_requires=">=3.6",
 )

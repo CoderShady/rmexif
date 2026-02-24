@@ -10,6 +10,7 @@ The library utilizes a memory-only processing pipeline. Image data is handled ex
 ### Data Privacy
 - **Metadata Redaction**: Complete removal of EXIF tags, GPS coordinates, camera signatures, and software identifiers.
 - **Automated Face Redaction**: AI-driven detection and heavy Gaussian blurring of facial regions to prevent biometric identification.
+- **Stealth Mode (Digital Identity Reset)**: Automatic 0.99x resizing and quality re-encoding to ensure the resulting file has a unique cryptographic hash, effectively "de-indexing" it from the original.
 
 ## How to Use
 
@@ -27,12 +28,14 @@ def handle_image_upload(raw_bytes):
     clean_bytes, stats = api.process()
     
     print(f"Privacy Check: {stats['faces_detected']} faces blurred.")
+    print(f"New Digital Identity: {stats['new_hash']}")
     return clean_bytes
 ```
 
 ## Technical Features
 - **Stateless Operation**: Thread-safe implementation designed for high-concurrency server environments.
 - **Resilient Validation**: Rigorous verification of image integrity and format before processing.
+- **Digital Fingerprinting**: Built-in SHA-256 hashing to verify "Stealth Mode" efficacy and track file transformations.
 - **Atomic Operations**: Functions are designed to either complete successfully or raise a specific `ProcessingError`, ensuring predictable state management in complex workflows.
 
 ## How to Install

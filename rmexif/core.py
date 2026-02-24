@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional
 from concurrent.futures import ThreadPoolExecutor
 from PIL import Image
 from .processors import strip_metadata, blur_faces
+from .utils import get_file_hash
 
 # Set up logging for internal error tracking
 logger = logging.getLogger(__name__)
@@ -69,7 +70,9 @@ class Scrubber:
             stats = {
                 "faces_detected": face_count,
                 "metadata_removed": True,
-                "processing_time_ms": round(processing_time_ms, 2)
+                "processing_time_ms": round(processing_time_ms, 2),
+                "original_hash": get_file_hash(self.image_bytes),
+                "new_hash": get_file_hash(final_bytes)
             }
             
             return final_bytes, stats
