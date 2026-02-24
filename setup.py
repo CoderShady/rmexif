@@ -15,7 +15,7 @@ setup(
             "rmexif=rmexif.cli:main",
         ],
     },
-    author="Your Name",
+    author="CoderShady",
     description="A professional tool to strip EXIF metadata and blur faces from images.",
     python_requires=">=3.6",
 )
