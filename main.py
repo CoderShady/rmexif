@@ -3,7 +3,6 @@ import requests
 import logging
 from rmexif import Scrubber, bulk_process
 
-# Configure logging to be silent except for critical errors to keep output clean for JSON
 logging.basicConfig(level=logging.CRITICAL)
 
 def main():
@@ -21,24 +20,17 @@ def main():
     headers = {"User-Agent": "Mozilla/5.0"}
     
     try:
-        # 1. Load images
         for url in urls:
             response = requests.get(url, headers=headers, timeout=10)
             response.raise_for_status()
             image_list.append(response.content)
-            
-        # 2. High-Performance Bulk Process (Process-level parallelism)
-        # This utilizes rmexif.bulk_process which uses ProcessPoolExecutor
         cleaned_images = bulk_process(image_list)
-        
-        # Calculate totals for metadata summary
         total_faces = 0
         for img_bytes in image_list:
             scrubber = Scrubber(img_bytes)
             _, stats = scrubber.process()
             total_faces += stats["faces_detected"]
 
-        # 3. Output Production JSON Summary (includes Stealth Mode verification)
         summary = {
             "status": "success",
             "files_processed": len(cleaned_images),
