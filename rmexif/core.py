@@ -6,10 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from PIL import Image
 from .processors import strip_metadata, blur_faces
 from .utils import get_file_hash
-
-# Set up logging for internal error tracking
 logger = logging.getLogger(__name__)
-
 class Scrubber:
     """
     A strictly data-in, data-out utility to scrub images of sensitive 
@@ -56,12 +53,7 @@ class Scrubber:
         """
         start_time = time.perf_counter()
         try:
-            # Step 1: Strip EXIF metadata in-memory
-            # We assume metadata is removed if step completes without error
             cleaned_bytes: bytes = strip_metadata(self.image_bytes)
-            
-            # Step 2: Detect and blur faces in-memory
-            # blur_faces returns (processed_bytes, face_count)
             final_bytes, face_count = blur_faces(cleaned_bytes)
             
             end_time = time.perf_counter()
@@ -79,16 +71,12 @@ class Scrubber:
         except Exception as e:
             logger.error(f"Scrubbing process failed: {e}", exc_info=True)
             raise
-
-
-
     def get_summary(self) -> Dict[str, Any]:
         """
         Optionally provides a metadata summary of the image without 
         modifying the original bytes. Used for reporting or dry runs.
         """
         try:
-            # We use the processors directly to find faces
             from .processors import detect_faces
             _, faces = detect_faces(self.image_bytes)
             return {
@@ -103,11 +91,9 @@ class Scrubber:
     def _process_single(data: bytes) -> bytes:
         """Helper for bulk processing block."""
         try:
-            # Matches the packing: returns (bytes, stats)
             cleaned_bytes, _ = Scrubber(data).process()
             return cleaned_bytes
         except Exception:
-            # On failure, return original bytes to maintain sequence integrity
             return data
 
 
@@ -125,7 +111,3 @@ class Scrubber:
         """
         with ThreadPoolExecutor() as executor:
             return list(executor.map(Scrubber._process_single, image_list))
-
-
-
-
