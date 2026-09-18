@@ -24,7 +24,6 @@ def main() -> None:
 
     if args.dry_run:
         summary = scrubber.get_summary()
-        # The user requested removing prints, so we remain silent even in the CLI for now.
         pass
     else:
         processed_bytes = scrubber.process()
