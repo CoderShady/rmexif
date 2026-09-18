@@ -4,8 +4,6 @@ import logging
 import numpy as np
 from PIL import Image
 from typing import Tuple, List, Any, Optional
-
-# Set up logging
 logger = logging.getLogger(__name__)
 
 def strip_metadata(image_bytes: bytes) -> bytes:
@@ -14,11 +12,8 @@ def strip_metadata(image_bytes: bytes) -> bytes:
     without any EXIF or metadata.
     """
     try:
-        # PIL.Image.open and save are thread-safe for separate ByteIO streams
         img = Image.open(io.BytesIO(image_bytes))
         original_format = img.format if img.format else "JPEG"
-        
-        # Apply slight resize factor (0.99) to ensure unique hash
         width, height = img.size
         new_size = (max(1, int(width * 0.99)), max(1, int(height * 0.99)))
         img = img.resize(new_size, Image.Resampling.LANCZOS)
@@ -53,8 +48,6 @@ def detect_faces(image_bytes: bytes) -> Tuple[Optional[np.ndarray], List[Any]]:
         if img is None:
             logger.warning("Decoded image is None. Source bytes may be invalid.")
             return None, []
-
-        # Local initialization ensures thread-safety in multi-threaded environments (e.g. Flask/FastAPI)
         face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         
         if face_cascade.empty():
@@ -85,7 +78,6 @@ def blur_faces(image_bytes: bytes) -> Tuple[bytes, int]:
         img, faces = detect_faces(image_bytes)
         
         if img is None or len(faces) == 0:
-            # If no faces found or image decoding failed, return bytes as is
             return image_bytes, 0
 
         for (x, y, w, h) in faces:
