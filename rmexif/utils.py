@@ -2,8 +2,6 @@ import logging
 import hashlib
 from concurrent.futures import ProcessPoolExecutor
 from typing import List
-
-# Set up logging for parallel workers
 logger = logging.getLogger(__name__)
 
 def _scrub_task(image_data: bytes) -> bytes:
@@ -13,7 +11,6 @@ def _scrub_task(image_data: bytes) -> bytes:
     """
     try:
         from .core import Scrubber
-        # Scrubber handles memory-only processing
         scrubber = Scrubber(image_data)
         clean_bytes, _ = scrubber.process()
         return clean_bytes
@@ -34,7 +31,6 @@ def bulk_process(image_list: List[bytes], max_workers: int = None) -> List[bytes
         List of scrubbed image byte streams in the original order.
     """
     with ProcessPoolExecutor(max_workers=max_workers) as executor:
-        # executor.map preserves order
         results = list(executor.map(_scrub_task, image_list))
     return results
 
